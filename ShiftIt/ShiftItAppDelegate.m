@@ -284,6 +284,8 @@ NSDictionary *allShiftActions = nil;
 	[dict setObject:fullscreen forKey:[fullscreen identifier]];
 	ShiftItAction *center = [[ShiftItAction alloc] initWithIdentifier:@"center" label:@"Center" uiTag:6 action:&ShiftIt_Center];
 	[dict setObject:center forKey:[center identifier]];
+	ShiftItAction *swapscreen = [[ShiftItAction alloc] initWithIdentifier:@"swapscreen" label:@"Swap Screen" uiTag:7 action:&ShiftIt_SwapScreen];
+	[dict setObject:swapscreen forKey:[swapscreen identifier]];
 	
 	allShiftActions = [[NSDictionary dictionaryWithDictionary:dict] retain];
 }

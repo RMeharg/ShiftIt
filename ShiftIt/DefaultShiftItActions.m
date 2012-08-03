@@ -214,3 +214,7 @@ NSRect ShiftIt_Center(NSRect screenRect, NSRect windowRect) {
 	
 	return r;
 }
+
+NSRect ShiftIt_SwapScreen(NSRect screenRect, NSRect windowRect) {
+    return windowRect;
+}

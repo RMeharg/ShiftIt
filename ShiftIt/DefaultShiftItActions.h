@@ -28,3 +28,4 @@ NSRect ShiftIt_Top(NSRect screenRect, NSRect windowRect);
 NSRect ShiftIt_Bottom(NSRect screenRect, NSRect windowRect);
 NSRect ShiftIt_FullScreen(NSRect screenRect, NSRect windowRect);
 NSRect ShiftIt_Center(NSRect screenRect, NSRect windowRect);
+NSRect ShiftIt_SwapScreen(NSRect screenRect, NSRect windowRect);

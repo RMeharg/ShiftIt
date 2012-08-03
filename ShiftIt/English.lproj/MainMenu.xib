@@ -128,6 +128,26 @@
 						<reference key="NSOnImage" ref="757936152"/>
 						<reference key="NSMixedImage" ref="797238407"/>
 					</object>
+					<object class="NSMenuItem" id="719845606">
+						<reference key="NSMenu" ref="981997696"/>
+						<string key="NSTitle">Swap Screen</string>
+						<string type="base64-UTF8" key="NSKeyEquiv">IA</string>
+						<int key="NSKeyEquivModMask">1835008</int>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="757936152"/>
+						<reference key="NSMixedImage" ref="797238407"/>
+						<int key="NSTag">2007</int>
+					</object>
+					<object class="NSMenuItem" id="278162095">
+						<reference key="NSMenu" ref="981997696"/>
+						<bool key="NSIsDisabled">YES</bool>
+						<bool key="NSIsSeparator">YES</bool>
+						<string key="NSTitle"/>
+						<string key="NSKeyEquiv"/>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="757936152"/>
+						<reference key="NSMixedImage" ref="797238407"/>
+					</object>
 					<object class="NSMenuItem" id="652513975">
 						<reference key="NSMenu" ref="981997696"/>
 						<string key="NSTitle">Preferences</string>
@@ -237,6 +257,8 @@
 							<reference ref="860008011"/>
 							<reference ref="652513975"/>
 							<reference ref="87783715"/>
+							<reference ref="719845606"/>
+							<reference ref="278162095"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -295,6 +317,16 @@
 						<reference key="object" ref="87783715"/>
 						<reference key="parent" ref="981997696"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">783</int>
+						<reference key="object" ref="719845606"/>
+						<reference key="parent" ref="981997696"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">784</int>
+						<reference key="object" ref="278162095"/>
+						<reference key="parent" ref="981997696"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -317,9 +349,13 @@
 					<string>558.IBPluginDependency</string>
 					<string>670.IBPluginDependency</string>
 					<string>781.IBPluginDependency</string>
+					<string>783.IBPluginDependency</string>
+					<string>784.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -350,7 +386,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">782</int>
+			<int key="maxID">784</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
