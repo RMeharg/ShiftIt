@@ -35,11 +35,13 @@ NSString *const kHotKeyKeyCodeKey = @"kHotKeyKeyCodeKey";
 NSString *const kHotKeyModifiersKey = @"kHotKeyModifiersKey";
 
 NSInteger const kSISRUITagPrefix = 1000;
+NSInteger const kSRContainerTagPrefix = 100;
 
 NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 
 @interface PreferencesWindowController(Private)
 
+- (void)buildShortcutRecorders;
 - (void)windowMainStatusChanged_:(NSNotification *)notification;
 
 @end
@@ -71,6 +73,7 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 	[notificationCenter addObserver:self selector:@selector(windowMainStatusChanged_:) name:NSWindowDidResignMainNotification object:[self window]];
 	[notificationCenter addObserver:self selector:@selector(windowMainStatusChanged_:) name:NSWindowDidBecomeMainNotification object:[self window]];
 	
+    [self buildShortcutRecorders];
 	[self updateRecorderCombos];
 }
 
@@ -143,6 +146,23 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 	[userInfo setObject:[NSNumber numberWithLong:newKeyCombo.flags] forKey:kHotKeyModifiersKey];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:kHotKeyChangedNotification object:self userInfo:userInfo];
+}
+
+- (void)buildShortcutRecorders {    
+	NSInteger idx = [tabView_ indexOfTabViewItemWithIdentifier:@"hotKeys"];
+	NSView *hotKeysView = [[tabView_ tabViewItemAtIndex:idx] view];
+    for (ShiftItAction *action in [allShiftActions allValues]) {
+        NSControl *container = [hotKeysView viewWithTag:kSRContainerTagPrefix + action.uiTag];
+        SRRecorderControl *shortcutRecorder = [[[SRRecorderControl alloc] initWithFrame:container.frame] autorelease];
+        
+        shortcutRecorder.style = 1;
+        shortcutRecorder.allowedFlags = 10354688;
+        shortcutRecorder.tag = kSISRUITagPrefix + action.uiTag;
+        shortcutRecorder.delegate = self; 
+        [shortcutRecorder setAllowsKeyOnly:YES escapeKeysRecord:NO];
+        [hotKeysView addSubview:shortcutRecorder];
+        [container removeFromSuperview];
+    }
 }
 
 - (void)updateRecorderCombos {
