@@ -1,39 +1,7 @@
-/*
- ShiftIt: Resize windows with Hotkeys
- Copyright (C) 2010  Filip Krikava
- 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
- */
-
 #import "ShiftComputer.h"
 #import "NSScreen+Coordinates.h"
-#import "FMTDefines.h"
 
-#define NSStringFromCGRect(rect) [NSString stringWithFormat:@"[%f, %f] [%f, %f]", (rect).origin.x, (rect).origin.y, (rect).size.width, (rect).size.height]
 #define CGPointCenterOfCGRect(rect) CGPointMake((rect).origin.x + (rect).size.width / 2, (rect).origin.y + (rect).size.height / 2)
-
-BOOL AreClose(float a, float b) {
-	return fabs(a - b) < 20;
-}
-
-BOOL SizesAreClose(CGSize a, CGSize b) {
-	return AreClose(a.width, b.width) && AreClose(a.height, b.height);
-}
-
-
-CGRect lastWindowRect = {{0,0},{0,0}};
 
 typedef enum {
     topLeft,
@@ -42,6 +10,20 @@ typedef enum {
     bottomLeft,
     center
 } Origin;
+
+BOOL AreClose(float a, float b) {
+	return fabs(a - b) < 20;
+}
+
+BOOL RectsAreClose(CGRect a, CGRect b) {
+	return AreClose(a.size.width, b.size.width) &&
+    AreClose(a.size.height, b.size.height) &&
+    AreClose(a.origin.x, b.origin.x) &&
+    AreClose(a.origin.y, b.origin.y);
+}
+
+
+CGRect lastWindowRect = {{0,0},{0,0}};
 
 @interface ShiftComputer ()
 
@@ -54,9 +36,10 @@ typedef enum {
 - (CGRect)measureWindowRectangle;
 - (NSScreen *)identifyCurrentScreen;
 
+- (CGPoint)targetPositionForOrigin:(Origin)origin toBeAtPoint:(CGPoint)point forSize:(CGSize)size;
 - (CGRect)setWindowSize:(CGSize)windowSize andSnapOrigin:(Origin)Origin to:(CGPoint)point;
 
-- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point;
+- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point cycleToFull:(BOOL)cycleToFull;
 - (BOOL)origin:(Origin)Origin isNearPoint:(CGPoint)point;
 
 @end
@@ -142,48 +125,49 @@ typedef enum {
     return winner;
 }
 
-- (CGRect)setWindowSize:(CGSize)windowSize andSnapOrigin:(Origin)Origin to:(CGPoint)point {
-    NSLog(@"================> Set WindowRectangle: %@", NSStringFromCGRect(self.windowRect));    
-    NSLog(@"================> To Size: [%f, %f], snap to: %d, anchored at: [%f, %f]", windowSize.width, windowSize.height, Origin, point.x, point.y);    
+- (CGPoint)targetPositionForOrigin:(Origin)origin toBeAtPoint:(CGPoint)point forSize:(CGSize)size {
+    if (origin == topLeft) {
+        return CGPointMake(point.x, point.y);
+    } else if (origin == topRight) {
+        return CGPointMake(point.x - size.width, point.y);       
+    } else if (origin == bottomLeft) {
+        return CGPointMake(point.x, point.y - size.height);       
+    } else if (origin == bottomRight) {
+        return CGPointMake(point.x - size.width, point.y - size.height);        
+    } else if (origin == center) {
+        return CGPointMake(point.x - size.width / 2, point.y - size.height / 2);
+    }
     
+    return CGPointZero;
+}
+
+- (CGRect)setWindowSize:(CGSize)windowSize andSnapOrigin:(Origin)origin to:(CGPoint)point {
     CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
     BOOL willExceedWidth = self.windowRect.origin.x + windowSize.width > frame.origin.x + frame.size.width + 5;
     BOOL willExceedHeight = self.windowRect.origin.y + windowSize.height > frame.origin.y + frame.size.height + 5;
     
     if (willExceedWidth || willExceedHeight) {
-        CGPoint temporaryPosition = CGPointMake(self.windowRect.origin.x, self.windowRect.origin.y);
-        if (willExceedWidth) temporaryPosition.x = frame.origin.x + frame.size.width - windowSize.width;
-        if (willExceedHeight) temporaryPosition.y = frame.origin.y + frame.size.height - windowSize.height;
+        CGPoint temporaryPosition = [self targetPositionForOrigin:origin toBeAtPoint:point forSize:windowSize];
+        if (temporaryPosition.x + windowSize.width > frame.origin.x + frame.size.width + 5) {
+            temporaryPosition.x = frame.origin.x + frame.size.width - windowSize.width;
+        }
+        
+        if (temporaryPosition.y + windowSize.height > frame.origin.y + frame.size.height + 5) {
+            temporaryPosition.y = frame.origin.y + frame.size.height - windowSize.height;
+        }
         
         CFTypeRef positionRef = (CFTypeRef)(AXValueCreate(kAXValueCGPointType, (const void *)&temporaryPosition));
         AXUIElementSetAttributeValue(self.window,(CFStringRef)NSAccessibilityPositionAttribute,(CFTypeRef*)positionRef);
         CFRelease(positionRef);
-        NSLog(@"====================> Repositioning first to [%f, %f]", temporaryPosition.x, temporaryPosition.y);
     }
     
     CFTypeRef sizeRef = (CFTypeRef)(AXValueCreate(kAXValueCGSizeType, (const void *)&windowSize));
     AXUIElementSetAttributeValue(self.window,(CFStringRef)NSAccessibilitySizeAttribute,(CFTypeRef*)sizeRef);
     NSSize resultingSize = [self measureWindowRectangle].size;
-    NSLog(@"================> After resize: %@", NSStringFromCGRect([self measureWindowRectangle]));    
     
-    CGPoint targetPosition;
-    if (Origin == topLeft) {
-        targetPosition = CGPointMake(point.x, point.y);
-    } else if (Origin == topRight) {
-        targetPosition = CGPointMake(point.x - resultingSize.width, point.y);       
-    } else if (Origin == bottomLeft) {
-        targetPosition = CGPointMake(point.x, point.y - resultingSize.height);       
-    } else if (Origin == bottomRight) {
-        targetPosition = CGPointMake(point.x - resultingSize.width, point.y - resultingSize.height);        
-    } else if (Origin == center) {
-        targetPosition = CGPointMake(point.x - resultingSize.width / 2, point.y - resultingSize.height / 2);
-    }
-    
-    NSLog(@"================> Set position to: %f, %f", targetPosition.x, targetPosition.y);    
-    
+    CGPoint targetPosition = [self targetPositionForOrigin:origin toBeAtPoint:point forSize:resultingSize];
     CFTypeRef positionRef = (CFTypeRef)(AXValueCreate(kAXValueCGPointType, (const void *)&targetPosition));
     AXUIElementSetAttributeValue(self.window,(CFStringRef)NSAccessibilityPositionAttribute,(CFTypeRef*)positionRef);
-    NSLog(@"================> After reposition: %@", NSStringFromCGRect([self measureWindowRectangle]));    
     
     CFRelease(positionRef);
     CFRelease(sizeRef);
@@ -192,13 +176,23 @@ typedef enum {
 }
 
 
-- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point {
+- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point cycleToFull:(BOOL)cycleToFull {
     float resultingValue = ceilf(containerValue / 2.0);
     if ([self origin:Origin isNearPoint:point]) {
         if (AreClose(value, ceilf(containerValue / 2.0))) {
             resultingValue = ceilf(containerValue / 3.0);
-        } else if (AreClose(value, ceilf(containerValue / 3.0))) {
-            resultingValue = ceilf(2 * containerValue / 3.0);
+        }
+        if (cycleToFull) {
+            if (AreClose(value, ceilf(containerValue / 3.0))) {
+                resultingValue = ceilf(containerValue);
+            }            
+            if (AreClose(value, ceilf(containerValue))) {
+                resultingValue = ceilf(2 * containerValue / 3.0);
+            }            
+        } else {
+            if (AreClose(value, ceilf(containerValue / 3.0))) {
+                resultingValue = ceilf(2 * containerValue / 3.0);
+            }            
         }
     }
     
@@ -227,7 +221,7 @@ typedef enum {
     CGPoint originPoint = CGPointMake(frame.origin.x, self.isWide ? frame.origin.y : self.windowRect.origin.y);
     float targetHeight = self.isWide ? frame.size.height : self.windowRect.size.height;
     float targetWidth = [self snapToThirdsForValue:self.windowRect.size.width containerValue:frame.size.width 
-                                          ifOrigin:topLeft isNearPoint:originPoint];
+                                          ifOrigin:topLeft isNearPoint:originPoint cycleToFull:!self.isWide];
     
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:topLeft to:originPoint];
 }
@@ -237,7 +231,7 @@ typedef enum {
     CGPoint originPoint = CGPointMake(frame.origin.x + frame.size.width, self.isWide ? frame.origin.y : self.windowRect.origin.y);
     float targetHeight = self.isWide ? frame.size.height : self.windowRect.size.height;
     float targetWidth = [self snapToThirdsForValue:self.windowRect.size.width containerValue:frame.size.width 
-                                          ifOrigin:topRight isNearPoint:originPoint];
+                                          ifOrigin:topRight isNearPoint:originPoint cycleToFull:!self.isWide];
     
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:topRight to:originPoint];
 }
@@ -246,7 +240,7 @@ typedef enum {
     CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
     CGPoint originPoint = CGPointMake(self.isWide ? self.windowRect.origin.x : frame.origin.x, frame.origin.y);
     float targetHeight = [self snapToThirdsForValue:self.windowRect.size.height containerValue:frame.size.height 
-                                           ifOrigin:topLeft isNearPoint:originPoint];
+                                           ifOrigin:topLeft isNearPoint:originPoint cycleToFull:self.isWide];
     float targetWidth = self.isWide ? self.windowRect.size.width : frame.size.width;
 
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:topLeft to:originPoint];
@@ -256,7 +250,7 @@ typedef enum {
     CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
     CGPoint originPoint = CGPointMake(self.isWide ? self.windowRect.origin.x : frame.origin.x, frame.origin.y + frame.size.height);
     float targetHeight = [self snapToThirdsForValue:self.windowRect.size.height containerValue:frame.size.height 
-                                           ifOrigin:bottomLeft isNearPoint:originPoint];
+                                           ifOrigin:bottomLeft isNearPoint:originPoint cycleToFull:self.isWide];
     float targetWidth = self.isWide ? self.windowRect.size.width : frame.size.width;
     
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:bottomLeft to:originPoint];
@@ -264,7 +258,7 @@ typedef enum {
 
 - (void)fullscreen {
     CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
-    if ([self origin:topLeft isNearPoint:frame.origin] && SizesAreClose(self.windowRect.size, frame.size) && !CGRectIsEmpty(lastWindowRect)) {
+    if (RectsAreClose(self.windowRect, frame) && !CGRectIsEmpty(lastWindowRect)) {
         [self setWindowSize:lastWindowRect.size andSnapOrigin:topLeft to:lastWindowRect.origin];            
     } else {
         lastWindowRect = self.windowRect;
@@ -287,11 +281,19 @@ typedef enum {
         }
     }
     
-    [self setWindowSize:CGSizeMake(frame.size.width * targetFactor, frame.size.height * targetFactor) andSnapOrigin:center to:CGPointCenterOfCGRect(frame)];
+    [self setWindowSize:CGSizeMake(frame.size.width * targetFactor, frame.size.height * targetFactor)
+          andSnapOrigin:center
+                     to:CGPointCenterOfCGRect(frame)];
 }
 
 - (void)swapscreen {
-    
+    NSUInteger index = [[NSScreen screens] indexOfObject:self.currentScreen] + 1;
+    NSScreen *nextScreen = [[NSScreen screens] objectAtIndex:index % [[NSScreen screens] count]];
+    if (nextScreen != self.currentScreen) {
+        self.currentScreen = nextScreen;
+        CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
+        [self setWindowSize:CGSizeMake(frame.size.width * 0.85, frame.size.height * 0.85) andSnapOrigin:center to:CGPointCenterOfCGRect(frame)];
+    }
 }
 
 @end
