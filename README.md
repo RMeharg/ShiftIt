@@ -28,6 +28,8 @@ So, to throw a window to the top-left corner: ⌃⌥⌘ + ←, ⌃⌥⌘ + ↑, 
 
 **Note** this fork of ShiftIt has removed support for repositioning X11 windows.  If you desperately need this to come back post an issue or (better yet) a pull request.
 
+**Also Note** some applications enforce specific size restrictions.  As far as I can tell there is no way to measure these restrictions *before* resizing windows.  In particular: Xcode doesn't like to get too small, so ShiftIt can't toggle Xcode through thirds on small monitors.  Also, Terminal quantizes its sizes to integer rows and columns, so ShiftIt's manipulations of terminal are approximate and there is sometimes a little overlap/gap around the edges.
+
 ## Compiling
 
 On Lion you should be able to open up the Xcode project and compile it.
