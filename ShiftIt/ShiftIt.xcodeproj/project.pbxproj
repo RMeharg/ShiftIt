@@ -12,7 +12,7 @@
 		27002A4412649E880062B6D6 /* X11Utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 27002A4312649E880062B6D6 /* X11Utils.c */; };
 		27002B331266F5CA0062B6D6 /* AXUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27002B321266F5CA0062B6D6 /* AXUIUtils.m */; };
 		2708BF011260E10900192883 /* ShiftItAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 2708BF001260E10900192883 /* ShiftItAction.m */; };
-		2708BF121260E5BB00192883 /* DefaultShiftItActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2708BF111260E5BB00192883 /* DefaultShiftItActions.m */; };
+		2708BF121260E5BB00192883 /* ShiftComputer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2708BF111260E5BB00192883 /* ShiftComputer.m */; };
 		27A14DB41269CD4200E68263 /* ShortcutRecorder.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 27A14D7F1269CCA200E68263 /* ShortcutRecorder.framework */; };
 		27A14DD31269CE5600E68263 /* ShortcutRecorder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27A14D7F1269CCA200E68263 /* ShortcutRecorder.framework */; };
 		27A14EC01269EC1500E68263 /* ShiftIt-defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27A14EBF1269EC1500E68263 /* ShiftIt-defaults.plist */; };
@@ -26,9 +26,9 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		E3F68AE415CD90D300CD3A90 /* NSScreen+Coordinates.m in Sources */ = {isa = PBXBuildFile; fileRef = E3F68AE315CD90D300CD3A90 /* NSScreen+Coordinates.m */; };
 		F2520B641133874D00DB826F /* PreferencesWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2520B631133874D00DB826F /* PreferencesWindowController.m */; };
 		F2DC1A321133829D009BDCA5 /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = F2DC1A311133829D009BDCA5 /* PreferencesWindow.xib */; };
-		F2DC61251127ACDE000E1A5B /* WindowSizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F2DC61241127ACDE000E1A5B /* WindowSizer.m */; };
 		F2DC61EF1127C862000E1A5B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2DC61EE1127C862000E1A5B /* Carbon.framework */; };
 /* End PBXBuildFile section */
 
@@ -58,8 +58,8 @@
 		27002B321266F5CA0062B6D6 /* AXUIUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AXUIUtils.m; sourceTree = "<group>"; };
 		2708BEFF1260E10900192883 /* ShiftItAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShiftItAction.h; sourceTree = "<group>"; };
 		2708BF001260E10900192883 /* ShiftItAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShiftItAction.m; sourceTree = "<group>"; };
-		2708BF101260E5BB00192883 /* DefaultShiftItActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultShiftItActions.h; sourceTree = "<group>"; };
-		2708BF111260E5BB00192883 /* DefaultShiftItActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DefaultShiftItActions.m; sourceTree = "<group>"; };
+		2708BF101260E5BB00192883 /* ShiftComputer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShiftComputer.h; sourceTree = "<group>"; };
+		2708BF111260E5BB00192883 /* ShiftComputer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShiftComputer.m; sourceTree = "<group>"; };
 		2708C2551261C8E800192883 /* ShiftIt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShiftIt.h; sourceTree = "<group>"; };
 		27A14D7F1269CCA200E68263 /* ShortcutRecorder.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ShortcutRecorder.framework; sourceTree = "<group>"; };
 		27A14EBF1269EC1500E68263 /* ShiftIt-defaults.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = "ShiftIt-defaults.plist"; sourceTree = "<group>"; };
@@ -80,10 +80,11 @@
 		83E55ED4125A5FCF00FC49BF /* ShiftIt.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ShiftIt.icns; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* ShiftIt-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ShiftIt-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ShiftIt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShiftIt.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E3F68AE215CD90D300CD3A90 /* NSScreen+Coordinates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSScreen+Coordinates.h"; sourceTree = "<group>"; };
+		E3F68AE315CD90D300CD3A90 /* NSScreen+Coordinates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSScreen+Coordinates.m"; sourceTree = "<group>"; };
 		F2520B621133874D00DB826F /* PreferencesWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindowController.h; sourceTree = "<group>"; };
 		F2520B631133874D00DB826F /* PreferencesWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindowController.m; sourceTree = "<group>"; };
 		F2DC1A311133829D009BDCA5 /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
-		F2DC61231127ACDE000E1A5B /* WindowSizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowSizer.h; sourceTree = "<group>"; };
 		F2DC61241127ACDE000E1A5B /* WindowSizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WindowSizer.m; sourceTree = "<group>"; };
 		F2DC61EE1127C862000E1A5B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -107,19 +108,20 @@
 			children = (
 				2708C1CC1261388A00192883 /* External */,
 				F2D9C239112F9D0E003E9435 /* Preferences */,
-				F2DC61231127ACDE000E1A5B /* WindowSizer.h */,
 				F2DC61241127ACDE000E1A5B /* WindowSizer.m */,
 				256AC3D80F4B6AC300CF3369 /* ShiftItAppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* ShiftItAppDelegate.m */,
 				2708BEFF1260E10900192883 /* ShiftItAction.h */,
 				2708BF001260E10900192883 /* ShiftItAction.m */,
-				2708BF101260E5BB00192883 /* DefaultShiftItActions.h */,
-				2708BF111260E5BB00192883 /* DefaultShiftItActions.m */,
+				2708BF101260E5BB00192883 /* ShiftComputer.h */,
+				2708BF111260E5BB00192883 /* ShiftComputer.m */,
 				2708C2551261C8E800192883 /* ShiftIt.h */,
 				27002A4212649E880062B6D6 /* X11Utils.h */,
 				27002A4312649E880062B6D6 /* X11Utils.c */,
 				27002B311266F5CA0062B6D6 /* AXUIUtils.h */,
 				27002B321266F5CA0062B6D6 /* AXUIUtils.m */,
+				E3F68AE215CD90D300CD3A90 /* NSScreen+Coordinates.h */,
+				E3F68AE315CD90D300CD3A90 /* NSScreen+Coordinates.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -306,10 +308,9 @@
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* ShiftItAppDelegate.m in Sources */,
-				F2DC61251127ACDE000E1A5B /* WindowSizer.m in Sources */,
 				F2520B641133874D00DB826F /* PreferencesWindowController.m in Sources */,
 				2708BF011260E10900192883 /* ShiftItAction.m in Sources */,
-				2708BF121260E5BB00192883 /* DefaultShiftItActions.m in Sources */,
+				2708BF121260E5BB00192883 /* ShiftComputer.m in Sources */,
 				27002A4412649E880062B6D6 /* X11Utils.c in Sources */,
 				27002B331266F5CA0062B6D6 /* AXUIUtils.m in Sources */,
 				27F4FD4B12730F2F00A65750 /* FMTHotKey.m in Sources */,
@@ -317,6 +318,7 @@
 				27F4FD4D12730F2F00A65750 /* FMTHotKeyManager.m in Sources */,
 				27F4FD5612730F4600A65750 /* FMTLoginItems.m in Sources */,
 				27F4FD5712730F4600A65750 /* FMTUtils.m in Sources */,
+				E3F68AE415CD90D300CD3A90 /* NSScreen+Coordinates.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,7 +19,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class WindowSizer;
 @class PreferencesWindowController;
 @class FMTHotKeyManager;
 
@@ -27,7 +26,6 @@
  @private
     PreferencesWindowController *preferencesController_;
 	FMTHotKeyManager *hotKeyManager_;	
-	WindowSizer *windowSizer_;
 
 	NSMutableDictionary *allHotKeys_;
 	BOOL paused_;

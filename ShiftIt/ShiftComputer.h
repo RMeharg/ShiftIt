@@ -19,13 +19,16 @@
 
 #import <Foundation/Foundation.h>
 
-BOOL CloseTo(float a, float b);
-BOOL Wide(NSRect screenRect);
+@interface ShiftComputer : NSObject 
 
-NSRect ShiftIt_Left(NSRect screenRect, NSRect windowRect);
-NSRect ShiftIt_Right(NSRect screenRect, NSRect windowRect);
-NSRect ShiftIt_Top(NSRect screenRect, NSRect windowRect);
-NSRect ShiftIt_Bottom(NSRect screenRect, NSRect windowRect);
-NSRect ShiftIt_FullScreen(NSRect screenRect, NSRect windowRect);
-NSRect ShiftIt_Center(NSRect screenRect, NSRect windowRect);
-NSRect ShiftIt_SwapScreen(NSRect screenRect, NSRect windowRect);
++ (ShiftComputer *)shiftComputer;
+
+- (void)left;
+- (void)right;
+- (void)top;
+- (void)bottom;
+- (void)fullscreen;
+- (void)center;
+- (void)swapscreen;
+
+@end

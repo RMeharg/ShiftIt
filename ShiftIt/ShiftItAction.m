@@ -22,34 +22,25 @@
 
 @implementation ShiftItAction
 
-@synthesize identifier = identifier_;
-@synthesize label = label_;
-@synthesize uiTag = uiTag_;
-@synthesize action = action_;
+@synthesize identifier, label, uiTag;
 
-- (id) initWithIdentifier:(NSString *)identifier label:(NSString *)label uiTag:(NSInteger)uiTag action:(ShiftItFunctionRef)action {
-	FMTAssertNotNil(identifier);
-	FMTAssertNotNil(label);
-	FMTAssert(uiTag > 0, @"uiTag must be greater than 0");
-	FMTAssertNotNil(action);
-
-	if (![super init]) {
-		return nil;
-	}
-	
-	identifier_ = [identifier retain];
-	label_ = [label retain];
-	uiTag_ = uiTag;
-	action_ = action;
-	
-	return self;
++ (ShiftItAction *)actionWithID:(NSString *)identifier label:(NSString *)label uiTag:(NSInteger)uiTag {
+    ShiftItAction *action = [[[self alloc] init] autorelease];
+    action.identifier = identifier;
+    action.label = label;
+    action.uiTag = uiTag;
+    
+    return action;
 }
 
-- (void) dealloc {
-	[identifier_ release];
-	[label_ release];
-	
-	[super dealloc];
+- (void)dealloc {
+    self.identifier = nil;
+    self.label = nil;
+    [super dealloc];
+}
+
+- (SEL)action {
+    return NSSelectorFromString(self.identifier);
 }
 
 @end

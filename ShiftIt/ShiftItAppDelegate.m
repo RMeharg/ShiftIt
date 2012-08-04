@@ -20,9 +20,8 @@
 #import "ShiftItAppDelegate.h"
 #import "ShiftIt.h"
 #import "ShiftItAction.h"
-#import "DefaultShiftItActions.h"
 #import "PreferencesWindowController.h"
-#import "WindowSizer.h"
+#import "ShiftComputer.h"
 #import "FMTLoginItems.h"
 #import "FMTHotKey.h"
 #import "FMTHotKeyManager.h"
@@ -160,7 +159,6 @@ NSDictionary *allShiftActions = nil;
     }
 	
 	hotKeyManager_ = [FMTHotKeyManager sharedHotKeyManager];
-	windowSizer_ = [WindowSizer sharedWindowSize];
 	
 	[self initializeActions_];
 	[self updateMenuBarIcon_];
@@ -272,21 +270,14 @@ NSDictionary *allShiftActions = nil;
 	
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 	
-	ShiftItAction *left = [[ShiftItAction alloc] initWithIdentifier:@"left" label:@"Left" uiTag:1 action:&ShiftIt_Left];
-	[dict setObject:left forKey:[left identifier]];
-	ShiftItAction *right = [[ShiftItAction alloc] initWithIdentifier:@"right" label:@"Right" uiTag:2 action:&ShiftIt_Right];
-	[dict setObject:right forKey:[right identifier]];
-	ShiftItAction *top = [[ShiftItAction alloc] initWithIdentifier:@"top" label:@"Top" uiTag:3 action:&ShiftIt_Top];
-	[dict setObject:top forKey:[top identifier]];
-	ShiftItAction *bottom = [[ShiftItAction alloc] initWithIdentifier:@"bottom" label:@"Bottom" uiTag:4 action:&ShiftIt_Bottom];
-	[dict setObject:bottom forKey:[bottom identifier]];
-	ShiftItAction *fullscreen = [[ShiftItAction alloc] initWithIdentifier:@"fullscreen" label:@"Full Screen" uiTag:5 action:&ShiftIt_FullScreen];
-	[dict setObject:fullscreen forKey:[fullscreen identifier]];
-	ShiftItAction *center = [[ShiftItAction alloc] initWithIdentifier:@"center" label:@"Center" uiTag:6 action:&ShiftIt_Center];
-	[dict setObject:center forKey:[center identifier]];
-	ShiftItAction *swapscreen = [[ShiftItAction alloc] initWithIdentifier:@"swapscreen" label:@"Swap Screen" uiTag:7 action:&ShiftIt_SwapScreen];
-	[dict setObject:swapscreen forKey:[swapscreen identifier]];
-	
+    [dict setObject:[ShiftItAction actionWithID:@"left" label:@"Left" uiTag:1] forKey:@"left"];
+    [dict setObject:[ShiftItAction actionWithID:@"right" label:@"Right" uiTag:2] forKey:@"right"];
+    [dict setObject:[ShiftItAction actionWithID:@"top" label:@"Top" uiTag:3] forKey:@"top"];
+    [dict setObject:[ShiftItAction actionWithID:@"bottom" label:@"Bottom" uiTag:4] forKey:@"bottom"];
+    [dict setObject:[ShiftItAction actionWithID:@"fullscreen" label:@"Full Screen" uiTag:5] forKey:@"fullscreen"];
+    [dict setObject:[ShiftItAction actionWithID:@"center" label:@"Center" uiTag:6] forKey:@"center"];
+    [dict setObject:[ShiftItAction actionWithID:@"swapscreen" label:@"Swap Screen" uiTag:7] forKey:@"swapscreen"];
+    
 	allShiftActions = [[NSDictionary dictionaryWithDictionary:dict] retain];
 }
 
@@ -366,15 +357,9 @@ NSDictionary *allShiftActions = nil;
 		}
 	}
 	
-	ShiftItAction *action = [allShiftActions objectForKey:identifier];
-	FMTAssertNotNil(action);
-	
+	ShiftItAction *action = [allShiftActions objectForKey:identifier];	
 	FMTDevLog(@"Invoking action: %@", identifier);
-	NSError *error = nil;
-	[windowSizer_ shiftFocusedWindowUsing:action error:&error];
-	if (error) {
-		NSLog(@"ShiftIt action: %@ failed: %@", [action identifier], FMTGetErrorDescription(error));
-	}	
+    [[ShiftComputer shiftComputer] performSelector:action.action];
 }
 
 - (IBAction)shiftItMenuAction_:(id)sender {
@@ -385,10 +370,8 @@ NSDictionary *allShiftActions = nil;
 	FMTAssertNotNil(identifier);
 	
 	FMTDevLog(@"ShitIt action activated from menu: %@", identifier);	
-
 	[self invokeShiftItActionByIdentifier_:identifier];
 }
-
 		 
 @end
 
