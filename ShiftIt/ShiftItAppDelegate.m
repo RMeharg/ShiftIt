@@ -46,15 +46,7 @@ NSString *const kSIMenuItemTitle = @"Shift";
 
 // the size that should be reserved for the menu item in the system menu in px
 NSInteger const kSIMenuItemSize = 30;
-
 NSInteger const kSIMenuUITagPrefix = 2000;
-
-// error related
-NSString *const SIErrorDomain = @"org.shiftitapp.shiftit.ErrorDomain";
-NSInteger const kUnableToGetActiveWindowErrorCode = 20100;
-NSInteger const kUnableToChangeWindowPositionErrorCode = 20101;
-NSInteger const kUnableToGetWindowGeometryErrorCode = 20102;
-NSInteger const kUnableToChangeWindowSizeErrorCode = 20102;
 
 NSDictionary *allShiftActions = nil;
 
@@ -96,8 +88,6 @@ NSDictionary *allShiftActions = nil;
 }
 
 - (void) firstLaunch_  {
-	FMTDevLog(@"First run");
-
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		
 	// ask to start it automatically - make sure it is not there
@@ -124,8 +114,6 @@ NSDictionary *allShiftActions = nil;
 	
 }
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-	FMTDevLog(@"Starting up ShiftIt...");
-	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults synchronize];
 
@@ -188,8 +176,6 @@ NSDictionary *allShiftActions = nil;
 }
 
 - (void) applicationWillTerminate:(NSNotification *)aNotification {
-	FMTDevLog(@"Shutting down ShiftIt...");
-	
 	// unregister hotkeys
 	for (FMTHotKey *hotKey in [allHotKeys_ allValues]) {
 		[hotKeyManager_ unregisterHotKey:hotKey];
@@ -241,22 +227,17 @@ NSDictionary *allShiftActions = nil;
 }
 
 - (void)updateStatusMenuShortcutForAction_:(ShiftItAction *)action keyCode:(NSInteger)keyCode modifiers:(NSUInteger)modifiers {
-	FMTAssertNotNil(action);
-	FMTDevLog(@"updateStatusMenuShortcutForAction_:%@ keyCode:%d modifiers:%ld", [action identifier], keyCode, modifiers);
-
 	NSMenuItem *menuItem = [statusMenu_ itemWithTag:kSIMenuUITagPrefix+[action uiTag]];
-	FMTAssertNotNil(menuItem);
 	
-	[menuItem setTitle:[action label]];
-	[menuItem setRepresentedObject:[action identifier]];
+	[menuItem setTitle:action.label];
+	[menuItem setRepresentedObject:action.identifier];
 	[menuItem setAction:@selector(shiftItMenuAction_:)];
 	
 	if (keyCode != -1) {
-		NSString *keyCodeString = SRStringForKeyCode(keyCode);
-		if (!keyCodeString) {
-			FMTDevLog(@"Unable to get string representation for a key code: %ld", keyCode);
-			keyCodeString = @"";
-		}
+		NSString *keyCodeString = keyCode == 49 ? @" " : SRStringForKeyCode(keyCode);
+
+		if (!keyCodeString) keyCodeString = @"";
+        
 		[menuItem setKeyEquivalent:[keyCodeString lowercaseString]];
 		[menuItem setKeyEquivalentModifierMask:modifiers];
 	} else {
@@ -266,8 +247,6 @@ NSDictionary *allShiftActions = nil;
 }
 
 - (void) initializeActions_ {
-	FMTAssert(allShiftActions == nil, @"Actions have been already initialized");
-	
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 	
     [dict setObject:[ShiftItAction actionWithID:@"left" label:@"Left" uiTag:1] forKey:@"left"];
@@ -291,12 +270,10 @@ NSDictionary *allShiftActions = nil;
 	if ([name isEqualTo:kDidFinishEditingHotKeysPrefNotification]) {
 		@synchronized(self) {
 			paused_ = NO;
-			FMTDevLog(@"Resuming actions");
 		}
 	} else if ([name isEqualTo:kDidStartEditingHotKeysPrefNotification]) {
 		@synchronized(self) {
 			paused_ = YES;
-			FMTDevLog(@"Pausing actions");
 		}		
 	}
 	
@@ -309,29 +286,20 @@ NSDictionary *allShiftActions = nil;
 	NSInteger keyCode = [[userInfo objectForKey:kHotKeyKeyCodeKey] integerValue];
 	NSUInteger modifiers = [[userInfo objectForKey:kHotKeyModifiersKey] longValue];
 	
-	FMTDevLog(@"Updating action %@ hotKey: keyCode=%d modifiers=%ld", identifier, keyCode, modifiers);
-	
-	ShiftItAction *action = [allShiftActions objectForKey:identifier];
-	FMTAssertNotNil(action);
-	
+	ShiftItAction *action = [allShiftActions objectForKey:identifier];	
+    
 	FMTHotKey *newHotKey = [[FMTHotKey alloc] initWithKeyCode:keyCode modifiers:modifiers];
-	
 	FMTHotKey *hotKey = [allHotKeys_ objectForKey:identifier];
 	if (hotKey) {
 		if ([hotKey isEqualTo:newHotKey]) {
-			FMTDevLog(@"Hot key is the same");
 			return;
 		}
 		
-		FMTDevLog(@"Unregistering old hot key: %@ for shiftIt action %@", hotKey, identifier);
 		[hotKeyManager_ unregisterHotKey:hotKey];
 		[allHotKeys_ removeObjectForKey:identifier];
 	}
 	
-	if (keyCode == -1) { // no key
-		FMTDevLog(@"No hot key");
-	} else {
-		FMTDevLog(@"Registering new hot key: %@ for shiftIt action %@", newHotKey, identifier);
+	if (keyCode != -1) {
 		[hotKeyManager_ registerHotKey:newHotKey handler:@selector(invokeShiftItActionByIdentifier_:) provider:self userData:identifier];
 		[allHotKeys_ setObject:newHotKey forKey:identifier];
 	}
@@ -340,8 +308,6 @@ NSDictionary *allShiftActions = nil;
 	[self updateStatusMenuShortcutForAction_:action keyCode:keyCode modifiers:modifiers];
 	
 	if ([notification object] != self) {
-		// save to user preferences
-		FMTDevLog(@"Updating user preferences with new hot key: %@ for shiftIt action %@", newHotKey, identifier);
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults setInteger:keyCode forKey:KeyCodePrefKey(identifier)];
 		[defaults setInteger:modifiers forKey:ModifiersPrefKey(identifier)];
@@ -352,35 +318,17 @@ NSDictionary *allShiftActions = nil;
 - (void) invokeShiftItActionByIdentifier_:(NSString *)identifier {
 	@synchronized(self) {
 		if (paused_) {
-			FMTDevLog(@"The functionality is temporarly paused");
 			return ;
 		}
 	}
 	
 	ShiftItAction *action = [allShiftActions objectForKey:identifier];	
-	FMTDevLog(@"Invoking action: %@", identifier);
     [[ShiftComputer shiftComputer] performSelector:action.action];
 }
 
 - (IBAction)shiftItMenuAction_:(id)sender {
-	FMTAssertNotNil(sender);
-	FMTAssert([sender isKindOfClass:[NSMenuItem class]], @"Invalid type of sender: %@", [sender class]);
-	
 	NSString *identifier = [sender representedObject];
-	FMTAssertNotNil(identifier);
-	
-	FMTDevLog(@"ShitIt action activated from menu: %@", identifier);	
 	[self invokeShiftItActionByIdentifier_:identifier];
 }
 		 
 @end
-
-inline NSError* SICreateError(NSString *localizedDescription, NSInteger errorCode) {
-	FMTAssertNotNil(localizedDescription);
-	
-	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:1];
-	[userInfo setObject:localizedDescription forKey:NSLocalizedDescriptionKey];
-	
-	NSError *error = [NSError errorWithDomain:SIErrorDomain code:errorCode userInfo:userInfo];	
-	return error;
-}

@@ -39,7 +39,7 @@ CGRect lastWindowRect = {{0,0},{0,0}};
 - (CGPoint)targetPositionForOrigin:(Origin)origin toBeAtPoint:(CGPoint)point forSize:(CGSize)size;
 - (CGRect)setWindowSize:(CGSize)windowSize andSnapOrigin:(Origin)Origin to:(CGPoint)point;
 
-- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point cycleToFull:(BOOL)cycleToFull;
+- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point cycleThroughFullValue:(BOOL)cycleThroughFullValue;
 - (BOOL)origin:(Origin)Origin isNearPoint:(CGPoint)point;
 
 @end
@@ -176,13 +176,13 @@ CGRect lastWindowRect = {{0,0},{0,0}};
 }
 
 
-- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point cycleToFull:(BOOL)cycleToFull {
+- (float)snapToThirdsForValue:(float)value containerValue:(float)containerValue ifOrigin:(Origin)Origin isNearPoint:(CGPoint)point cycleThroughFullValue:(BOOL)cycleThroughFullValue {
     float resultingValue = ceilf(containerValue / 2.0);
     if ([self origin:Origin isNearPoint:point]) {
         if (AreClose(value, ceilf(containerValue / 2.0))) {
             resultingValue = ceilf(containerValue / 3.0);
         }
-        if (cycleToFull) {
+        if (cycleThroughFullValue) {
             if (AreClose(value, ceilf(containerValue / 3.0))) {
                 resultingValue = ceilf(containerValue);
             }            
@@ -221,7 +221,7 @@ CGRect lastWindowRect = {{0,0},{0,0}};
     CGPoint originPoint = CGPointMake(frame.origin.x, self.isWide ? frame.origin.y : self.windowRect.origin.y);
     float targetHeight = self.isWide ? frame.size.height : self.windowRect.size.height;
     float targetWidth = [self snapToThirdsForValue:self.windowRect.size.width containerValue:frame.size.width 
-                                          ifOrigin:topLeft isNearPoint:originPoint cycleToFull:!self.isWide];
+                                          ifOrigin:topLeft isNearPoint:originPoint cycleThroughFullValue:!self.isWide];
     
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:topLeft to:originPoint];
 }
@@ -231,7 +231,7 @@ CGRect lastWindowRect = {{0,0},{0,0}};
     CGPoint originPoint = CGPointMake(frame.origin.x + frame.size.width, self.isWide ? frame.origin.y : self.windowRect.origin.y);
     float targetHeight = self.isWide ? frame.size.height : self.windowRect.size.height;
     float targetWidth = [self snapToThirdsForValue:self.windowRect.size.width containerValue:frame.size.width 
-                                          ifOrigin:topRight isNearPoint:originPoint cycleToFull:!self.isWide];
+                                          ifOrigin:topRight isNearPoint:originPoint cycleThroughFullValue:!self.isWide];
     
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:topRight to:originPoint];
 }
@@ -240,7 +240,7 @@ CGRect lastWindowRect = {{0,0},{0,0}};
     CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
     CGPoint originPoint = CGPointMake(self.isWide ? self.windowRect.origin.x : frame.origin.x, frame.origin.y);
     float targetHeight = [self snapToThirdsForValue:self.windowRect.size.height containerValue:frame.size.height 
-                                           ifOrigin:topLeft isNearPoint:originPoint cycleToFull:self.isWide];
+                                           ifOrigin:topLeft isNearPoint:originPoint cycleThroughFullValue:self.isWide];
     float targetWidth = self.isWide ? self.windowRect.size.width : frame.size.width;
 
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:topLeft to:originPoint];
@@ -250,7 +250,7 @@ CGRect lastWindowRect = {{0,0},{0,0}};
     CGRect frame = [self.currentScreen windowRectFromScreenRect:self.currentScreen.visibleFrame];
     CGPoint originPoint = CGPointMake(self.isWide ? self.windowRect.origin.x : frame.origin.x, frame.origin.y + frame.size.height);
     float targetHeight = [self snapToThirdsForValue:self.windowRect.size.height containerValue:frame.size.height 
-                                           ifOrigin:bottomLeft isNearPoint:originPoint cycleToFull:self.isWide];
+                                           ifOrigin:bottomLeft isNearPoint:originPoint cycleThroughFullValue:self.isWide];
     float targetWidth = self.isWide ? self.windowRect.size.width : frame.size.width;
     
     [self setWindowSize:CGSizeMake(targetWidth, targetHeight) andSnapOrigin:bottomLeft to:originPoint];

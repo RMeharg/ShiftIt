@@ -51,13 +51,5 @@ extern NSString *const kSIIconName;
 extern NSString *const kSIIconType;
 extern NSString *const kSIMenuItemTitle;
 
-extern NSString *const SIErrorDomain;
-extern NSInteger const kUnableToGetActiveWindowErrorCode;
-extern NSInteger const kUnableToChangeWindowPositionErrorCode;
-extern NSInteger const kUnableToGetWindowGeometryErrorCode;
-extern NSInteger const kUnableToChangeWindowSizeErrorCode;
-
 #define KeyCodePrefKey(identifier) FMTStr(@"%@%@", (identifier), kKeyCodePrefKeySuffix)
 #define ModifiersPrefKey(identifier) FMTStr(@"%@%@", (identifier), kModifiersPrefKeySuffix)
-
-extern NSError* SICreateError(NSString *localizedDescription, NSInteger errorCode);

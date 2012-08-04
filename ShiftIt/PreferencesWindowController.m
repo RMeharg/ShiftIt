@@ -119,8 +119,6 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 }
 
 - (void)setShouldStartAtLogin:(BOOL)flag {
-	FMTDevLog(@"ShiftIt should start at login: %d", flag);
-
 	NSString *path = [[NSBundle mainBundle] bundlePath];
 	[[FMTLoginItems sharedSessionLoginItems] toggleApplicationInLoginItemsWithPath:path enabled:flag];
 }
@@ -136,10 +134,7 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 			break;
 		}
 	}
-	FMTAssertNotNil(action);
-	
-	FMTDevLog(@"ShiftIt action %@ hotkey changed: ", [action identifier]);
-	
+		
 	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
 	[userInfo setObject:[action identifier] forKey:kActionIdentifierKey];
 	[userInfo setObject:[NSNumber numberWithInt:newKeyCombo.code] forKey:kHotKeyKeyCodeKey];
@@ -168,14 +163,11 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 - (void)updateRecorderCombos {
 	NSInteger idx = [tabView_ indexOfTabViewItemWithIdentifier:@"hotKeys"];
 	NSView *hotKeysView = [[tabView_ tabViewItemAtIndex:idx] view];
-	FMTAssertNotNil(hotKeysView);
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
 	for (ShiftItAction *action in [allShiftActions allValues]) {
 		SRRecorderControl *recorder = [hotKeysView viewWithTag:kSISRUITagPrefix+[action uiTag]];
-		FMTAssertNotNil(recorder);
-
 		NSString *identifier = [action identifier];
 		
 		KeyCombo combo;
