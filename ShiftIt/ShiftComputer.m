@@ -48,9 +48,6 @@ CGRect lastWindowRect = {{0,0},{0,0}};
 
 @synthesize window, windowRect, currentScreen, isWide;
 
-//ShiftComputer replaces windowSizer... X11 later.
-//No need to pass windowRect.  initialize will pull out the focused window, and this class will manage all screen related things, etc..
-
 + (ShiftComputer *)shiftComputer {
     return [[[ShiftComputer alloc] init] autorelease];
 }

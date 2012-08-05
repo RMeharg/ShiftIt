@@ -18,7 +18,6 @@
  */
 
 #import "ShiftItAction.h"
-#import "FMTDefines.h"
 
 @implementation ShiftItAction
 

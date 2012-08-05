@@ -357,13 +357,11 @@
 				GCC_WARN_SHADOW = NO;
 				INFOPLIST_FILE = "ShiftIt-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-L/usr/X11/lib",
-					"-lX11",
-				);
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = ShiftIt;
 				SDKROOT = "";
-				WARNING_CFLAGS = "-Wall";
+				WARNING_CFLAGS = "-DNDEBUG";
 			};
 			name = Debug;
 		};
@@ -380,6 +378,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ShiftIt_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = NO;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = NO;
@@ -389,13 +388,11 @@
 				GCC_WARN_SHADOW = NO;
 				INFOPLIST_FILE = "ShiftIt-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"-L/usr/X11/lib",
-					"-lX11",
-				);
+				OTHER_CFLAGS = "-DNDEBUG";
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = ShiftIt;
 				SDKROOT = "";
-				WARNING_CFLAGS = "-Wall";
+				WARNING_CFLAGS = "-DNDEBUG";
 			};
 			name = Release;
 		};
@@ -415,11 +412,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DX11";
-				OTHER_LDFLAGS = (
-					"-L/usr/X11/lib",
-					"-lX11",
-				);
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = "";
 			};
@@ -437,14 +431,8 @@
 				IBC_PLUGINS = ShortcutRecorder.framework/Versions/A/Resources/ShortcutRecorder.ibplugin;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"-DNDEBUG",
-					"-DX11",
-				);
-				OTHER_LDFLAGS = (
-					"-L/usr/X11/lib",
-					"-lX11",
-				);
+				OTHER_CFLAGS = "-DNDEBUG";
+				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = "";
 			};
