@@ -37,25 +37,21 @@ NSString *const kHotKeyModifiersKey = @"kHotKeyModifiersKey";
 NSInteger const kSISRUITagPrefix = 1000;
 NSInteger const kSRContainerTagPrefix = 100;
 
-NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
-
 @interface PreferencesWindowController(Private)
 
 - (void)buildShortcutRecorders;
-- (void)windowMainStatusChanged_:(NSNotification *)notification;
+- (void)windowDidResignMain:(NSNotification *)notification;
+- (void)windowDidBecomeMain:(NSNotification *)notification;
 
 @end
-
 
 @implementation PreferencesWindowController
 
 @dynamic shouldStartAtLogin;
+@synthesize view, titleLabel;
 
 -(id)init{
-    if (![super initWithWindowNibName:@"PreferencesWindow"]) {
-		return nil;
-    }
-	
+    self = [super initWithWindowNibName:@"PreferencesWindow"];
     return self;
 }
 
@@ -64,17 +60,20 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 }
 
 -(void)awakeFromNib {
-    [tabView_ selectTabViewItemAtIndex:0];
-
 	NSString *versionString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-	[versionLabel_ setStringValue:versionString];
+	[self.titleLabel setStringValue:[NSString stringWithFormat:@"ShiftIt %@", versionString]];
 
-	NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-	[notificationCenter addObserver:self selector:@selector(windowMainStatusChanged_:) name:NSWindowDidResignMainNotification object:[self window]];
-	[notificationCenter addObserver:self selector:@selector(windowMainStatusChanged_:) name:NSWindowDidBecomeMainNotification object:[self window]];
+	[[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(windowDidResignMain:) 
+                                                 name:NSWindowDidResignMainNotification 
+                                               object:self.window];
+    
+	[[NSNotificationCenter defaultCenter] addObserver:self 
+                                             selector:@selector(windowDidBecomeMain:) 
+                                                 name:NSWindowDidBecomeMainNotification 
+                                               object:self.window];
 	
     [self buildShortcutRecorders];
-	[self updateRecorderCombos];
 }
 
 -(IBAction)showPreferences:(id)sender{
@@ -83,31 +82,24 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
     [[self window] makeKeyAndOrderFront:sender];    
 }
 
--(IBAction)revertDefaults:(id)sender {
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-	NSString *path = FMTGetMainBundleResourcePath(kShiftItUserDefaults, @"plist");
-	NSDictionary *initialDefaults = [NSDictionary dictionaryWithContentsOfFile:path];
-	[defaults registerDefaults:initialDefaults];
-
-	for (ShiftItAction *action in [allShiftActions allValues]) {
-		NSString *identifier = [action identifier];
-		
-		NSNumber *n = nil;
-
-		n = [initialDefaults objectForKey:KeyCodePrefKey(identifier)];
-		[defaults setInteger:[n integerValue] forKey:KeyCodePrefKey(identifier)];
-		
-		n = [initialDefaults objectForKey:ModifiersPrefKey(identifier)];
-		[defaults setInteger:[n integerValue] forKey:ModifiersPrefKey(identifier)];
+- (void)shortcutRecorder:(SRRecorderControl *)recorder keyComboDidChange:(KeyCombo)newKeyCombo{
+	NSInteger tag = [recorder tag] - kSISRUITagPrefix;
+	
+	ShiftItAction *action = nil;
+	for (action in [allShiftActions allValues]) {
+		if ([action uiTag] == tag) {
+			break;
+		}
 	}
+    
+	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
+	[userInfo setObject:[action identifier] forKey:kActionIdentifierKey];
+	[userInfo setObject:[NSNumber numberWithInt:newKeyCombo.code] forKey:kHotKeyKeyCodeKey];
+	[userInfo setObject:[NSNumber numberWithLong:newKeyCombo.flags] forKey:kHotKeyModifiersKey];
 	
-	[defaults synchronize];
-	
-	// normally this won't be necessary since there could be an observer 
-	// looking at changes in the user defaults values itself, but since there is
-	// unfortunatelly 2 defaults for one key this won't work well
-	[self updateRecorderCombos];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kHotKeyChangedNotification 
+                                                        object:self 
+                                                      userInfo:userInfo];
 }
 
 
@@ -125,29 +117,10 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
 
 #pragma mark Shortcut Recorder methods
 
-- (void)shortcutRecorder:(SRRecorderControl *)recorder keyComboDidChange:(KeyCombo)newKeyCombo{
-	NSInteger tag = [recorder tag] - kSISRUITagPrefix;
-	
-	ShiftItAction *action = nil;
-	for (action in [allShiftActions allValues]) {
-		if ([action uiTag] == tag) {
-			break;
-		}
-	}
-		
-	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:3];
-	[userInfo setObject:[action identifier] forKey:kActionIdentifierKey];
-	[userInfo setObject:[NSNumber numberWithInt:newKeyCombo.code] forKey:kHotKeyKeyCodeKey];
-	[userInfo setObject:[NSNumber numberWithLong:newKeyCombo.flags] forKey:kHotKeyModifiersKey];
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:kHotKeyChangedNotification object:self userInfo:userInfo];
-}
-
 - (void)buildShortcutRecorders {    
-	NSInteger idx = [tabView_ indexOfTabViewItemWithIdentifier:@"hotKeys"];
-	NSView *hotKeysView = [[tabView_ tabViewItemAtIndex:idx] view];
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     for (ShiftItAction *action in [allShiftActions allValues]) {
-        NSControl *container = [hotKeysView viewWithTag:kSRContainerTagPrefix + action.uiTag];
+        NSControl *container = [self.view viewWithTag:kSRContainerTagPrefix + action.uiTag];
         SRRecorderControl *shortcutRecorder = [[[SRRecorderControl alloc] initWithFrame:container.frame] autorelease];
         
         shortcutRecorder.style = 1;
@@ -155,52 +128,24 @@ NSString *const kHotKeysTabViewItemIdentifier = @"hotKeys";
         shortcutRecorder.tag = kSISRUITagPrefix + action.uiTag;
         shortcutRecorder.delegate = self; 
         [shortcutRecorder setAllowsKeyOnly:YES escapeKeysRecord:NO];
-        [hotKeysView addSubview:shortcutRecorder];
+		
+		KeyCombo combo;
+		combo.code = [defaults integerForKey:KeyCodePrefKey(action.identifier)];
+		combo.flags = [defaults integerForKey:ModifiersPrefKey(action.identifier)];
+		[shortcutRecorder setKeyCombo:combo];		
+        
+        [self.view addSubview:shortcutRecorder];
         [container removeFromSuperview];
     }
 }
 
-- (void)updateRecorderCombos {
-	NSInteger idx = [tabView_ indexOfTabViewItemWithIdentifier:@"hotKeys"];
-	NSView *hotKeysView = [[tabView_ tabViewItemAtIndex:idx] view];
-	
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-	for (ShiftItAction *action in [allShiftActions allValues]) {
-		SRRecorderControl *recorder = [hotKeysView viewWithTag:kSISRUITagPrefix+[action uiTag]];
-		NSString *identifier = [action identifier];
-		
-		KeyCombo combo;
-		combo.code = [defaults integerForKey:KeyCodePrefKey(identifier)];
-		combo.flags = [defaults integerForKey:ModifiersPrefKey(identifier)];
-		[recorder setKeyCombo:combo];		
-	}	
-}
-
--(void)dealloc{
-	[super dealloc];
-}
-
-#pragma mark TabView delegate methods
-
-- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem {
-	if ([selectedTabIdentifier_ isEqualTo:kHotKeysTabViewItemIdentifier]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:kDidStartEditingHotKeysPrefNotification object:nil];
-	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:kDidFinishEditingHotKeysPrefNotification object:nil];
-	}
-}
-
 #pragma mark Notification handling methods
+- (void)windowDidResignMain:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kDidFinishEditingHotKeysPrefNotification object:nil];
+}
 
-- (void)windowMainStatusChanged_:(NSNotification *)notification {
-	NSString *name = [notification name];
-
-	if ([name isEqualTo:NSWindowDidBecomeMainNotification] && [selectedTabIdentifier_ isEqualTo:kHotKeysTabViewItemIdentifier]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:kDidStartEditingHotKeysPrefNotification object:nil];
-	} else if ([name isEqualTo:NSWindowDidResignMainNotification]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:kDidFinishEditingHotKeysPrefNotification object:nil];
-	}
+- (void)windowDidBecomeMain:(NSNotification *)notification {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kDidStartEditingHotKeysPrefNotification object:nil];
 }
 
 @end

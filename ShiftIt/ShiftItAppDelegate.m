@@ -62,7 +62,6 @@ NSDictionary *allShiftActions = nil;
 - (void) shiftItActionHotKeyChanged_:(NSNotification *) notification;
 - (void)handleActionsStateChangeRequest_:(NSNotification *) notification;
 
-- (IBAction)shiftItMenuAction_:(id)sender;
 @end
 
 
@@ -219,7 +218,7 @@ NSDictionary *allShiftActions = nil;
 
 - (IBAction)showPreferences:(id)sender {
     if (!preferencesController_) {
-        preferencesController_ = [[PreferencesWindowController alloc]init];
+        preferencesController_ = [[PreferencesWindowController alloc] init];
     }
 
     [preferencesController_ showPreferences:sender];
@@ -304,7 +303,6 @@ NSDictionary *allShiftActions = nil;
 		[allHotKeys_ setObject:newHotKey forKey:identifier];
 	}
 	
-	// update menu
 	[self updateStatusMenuShortcutForAction_:action keyCode:keyCode modifiers:modifiers];
 	
 	if ([notification object] != self) {

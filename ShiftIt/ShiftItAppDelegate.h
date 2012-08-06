@@ -30,11 +30,12 @@
 	NSMutableDictionary *allHotKeys_;
 	BOOL paused_;
 
-	NSMenu *statusMenu_;
+	IBOutlet NSMenu *statusMenu_;
 	NSStatusItem *statusItem_;
 	NSImage *statusMenuItemIcon_;
 }
 
 - (IBAction)showPreferences:(id)sender;
+- (IBAction)shiftItMenuAction_:(id)sender;
 
 @end

@@ -21,19 +21,12 @@
 #import <Cocoa/Cocoa.h>
 #import <ShortcutRecorder/ShortcutRecorder.h>
 
-@interface PreferencesWindowController : NSWindowController {
- @private
-	NSString *selectedTabIdentifier_;
-	
-	IBOutlet NSButton * openAtLogin_;
-    IBOutlet NSTabView * tabView_;
-	IBOutlet NSTextField * versionLabel_;	
-}
+@interface PreferencesWindowController : NSWindowController
 
+@property (nonatomic, assign) IBOutlet NSView *view;
+@property (nonatomic, assign) IBOutlet NSTextField *titleLabel;
 @property BOOL shouldStartAtLogin;
 
--(void)updateRecorderCombos;
--(IBAction)showPreferences:(id)sender;
--(IBAction)revertDefaults:(id)sender;
+- (void)showPreferences:(id)sender;
 
 @end
