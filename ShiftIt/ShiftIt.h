@@ -51,5 +51,9 @@ extern NSString *const kSIIconName;
 extern NSString *const kSIIconType;
 extern NSString *const kSIMenuItemTitle;
 
+BOOL AreClose(float a, float b);
+BOOL RectsAreClose(CGRect a, CGRect b);
+
+#define CGPointCenterOfCGRect(rect) CGPointMake((rect).origin.x + (rect).size.width / 2, (rect).origin.y + (rect).size.height / 2)
 #define KeyCodePrefKey(identifier) FMTStr(@"%@%@", (identifier), kKeyCodePrefKeySuffix)
 #define ModifiersPrefKey(identifier) FMTStr(@"%@%@", (identifier), kModifiersPrefKeySuffix)

@@ -168,9 +168,6 @@
 					</object>
 				</object>
 			</object>
-			<object class="NSCustomObject" id="268658829">
-				<string key="NSClassName">SUUpdater</string>
-			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<object class="NSMutableArray" key="connectionRecords">
@@ -308,11 +305,6 @@
 						<reference key="parent" ref="981997696"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">670</int>
-						<reference key="object" ref="268658829"/>
-						<reference key="parent" ref="0"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">781</int>
 						<reference key="object" ref="87783715"/>
 						<reference key="parent" ref="981997696"/>
@@ -347,14 +339,12 @@
 					<string>549.IBPluginDependency</string>
 					<string>550.IBPluginDependency</string>
 					<string>558.IBPluginDependency</string>
-					<string>670.IBPluginDependency</string>
 					<string>781.IBPluginDependency</string>
 					<string>783.IBPluginDependency</string>
 					<string>784.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
