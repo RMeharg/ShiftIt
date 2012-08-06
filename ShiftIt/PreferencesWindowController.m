@@ -134,7 +134,7 @@ NSInteger const kSRContainerTagPrefix = 100;
 		combo.flags = [defaults integerForKey:ModifiersPrefKey(action.identifier)];
 		[shortcutRecorder setKeyCombo:combo];		
         
-        [self.view addSubview:shortcutRecorder];
+        [container.superview addSubview:shortcutRecorder];
         [container removeFromSuperview];
     }
 }
