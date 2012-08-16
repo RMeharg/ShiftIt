@@ -2,6 +2,8 @@
 #import "NSScreen+Coordinates.h"
 #import "ShiftIt.h"
 
+#define NSStringFromCGRect(rect) [NSString stringWithFormat:@"[%.2f, %.2f] x [%.2f, %.2f]", (rect).origin.x, (rect).origin.y, (rect).size.width, (rect).size.height]
+
 @interface ShiftableWindow ()
 
 @property (nonatomic, assign) AXUIElementRef window;
@@ -76,7 +78,7 @@
     CGRect windowRect = self.frame;
 	
 	for (NSScreen *screen in [NSScreen screens]) {
-		NSRect intersectRect = NSIntersectionRect(screen.visibleFrame, windowRect);        
+		NSRect intersectRect = NSIntersectionRect([screen windowRectFromScreenRect:screen.visibleFrame], windowRect);        
         float area = intersectRect.size.width * intersectRect.size.height;
         if (area > winnerArea) {
             winner = screen;

@@ -38,3 +38,14 @@ On Lion you should be able to open up the Xcode project and compile it.
 
  * [ShortcutRecorder](http://code.google.com/p/shortcutrecorder/) framework (*New BSD license*) for capturing key bindings during hotkey reconfiguration.
  * [FMT](https://github.com/fikovnik/FMT) framework (*MIT license*) for some utility functions like handling login items, hot keys, etc.
+
+## Release Notes
+
+- v2.1 (8/16/2012)
+    - Fixed embarrasing multi-monitor bug
+  
+- v2.0 (8/6/2012)
+    - Better thirds support
+    - More robust window sizing
+    - General code clean up
+    - Rewrite of window tiling code
