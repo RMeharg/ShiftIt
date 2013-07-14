@@ -153,11 +153,29 @@ CGRect lastWindowRect = {{0,0},{0,0}};
                             to:CGPointCenterOfCGRect(frame)];
 }
 
+- (NSString *)frameKeyForScreen:(NSScreen *)screen
+
+{
+    return [NSString stringWithFormat:@"%.1f,%.1f,%.1f,%.1f", screen.frame.origin.x, screen.frame.origin.y, screen.frame.size.width, screen.frame.size.height];
+}
+
+
+
 - (void)swapscreen {
     if ([[NSScreen screens] count] > 1) {
+        NSMutableArray *uniqueScreens = [NSMutableArray array];
+        NSMutableDictionary *screenFrameLookup = [NSMutableDictionary dictionary];
+        for (NSScreen *screen in [NSScreen screens]) {
+            NSString *frameKey = [self frameKeyForScreen:screen];
+            if (!screenFrameLookup[frameKey]) {
+                [uniqueScreens addObject:screen];
+                screenFrameLookup[frameKey] = screen;
+            }
+        }
+        
         NSScreen *currentScreen = self.window.screen;
-        NSUInteger index = [[NSScreen screens] indexOfObject:currentScreen] + 1;
-        NSScreen *nextScreen = [[NSScreen screens] objectAtIndex:index % [[NSScreen screens] count]];
+        NSUInteger index = [uniqueScreens indexOfObject:screenFrameLookup[[self frameKeyForScreen:currentScreen]]] + 1;
+        NSScreen *nextScreen = [uniqueScreens objectAtIndex:index % uniqueScreens.count];
         
         CGRect frame = [nextScreen windowRectFromScreenRect:nextScreen.visibleFrame];
         [self.window setWindowSize:CGSizeMake(frame.size.width * 0.85, frame.size.height * 0.85)

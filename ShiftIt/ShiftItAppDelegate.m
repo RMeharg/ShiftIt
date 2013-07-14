@@ -72,8 +72,7 @@ NSDictionary *allShiftActions = nil;
 		return nil;
 	}
 	
-	NSString *iconPath = FMTGetMainBundleResourcePath(kSIIconName, @"png");
-	statusMenuItemIcon_ = [[NSImage alloc] initWithContentsOfFile:iconPath];
+	statusMenuItemIcon_ = [[NSImage imageNamed:kSIIconName] retain];
 	allHotKeys_ = [[NSMutableDictionary alloc] init];
 	
 	return self;

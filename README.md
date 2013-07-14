@@ -12,8 +12,7 @@ License: [GNU General Public License v3](http://www.gnu.org/licenses/gpl.html) (
 
 ## Using ShiftIt
 
-To install: grab the binary from the [downloads section](https://github.com/onsi/ShiftIt/downloads).
-I've tested ShiftIt on Lion but will make sure all is well with Mountain Lion when I upgrade.
+To install: download and unzip [ShiftIt.zip](https://raw.github.com/onsi/ShiftIt/master/ShiftIt.zip).
 
 ShiftIt allows you to tile windows using your keyboard:
 
@@ -30,16 +29,11 @@ So, to throw a window to the top-left corner: ⌃⌥⌘ + ←, ⌃⌥⌘ + ↑, 
 
 **Also Note** some applications enforce specific size restrictions.  As far as I can tell there is no way to measure these restrictions *before* resizing windows.  In particular: Xcode doesn't like to get too small, so ShiftIt can't toggle Xcode through thirds on small monitors.  Also, Terminal quantizes its sizes to integer rows and columns, so ShiftIt's manipulations of terminal are approximate and there is sometimes a little overlap/gap around the edges.
 
-## Compiling
-
-On Lion you should be able to open up the Xcode project and compile it.
-
-## 3rd Party Frameworks
-
- * [ShortcutRecorder](http://code.google.com/p/shortcutrecorder/) framework (*New BSD license*) for capturing key bindings during hotkey reconfiguration.
- * [FMT](https://github.com/fikovnik/FMT) framework (*MIT license*) for some utility functions like handling login items, hot keys, etc.
-
 ## Release Notes
+
+- v2.2 (6/14/2013)
+    - Fixed bug in multi-monitor support where two monitors are mirrored and one monitor is not.
+    - Tool bar icon is now retina-friendly
 
 - v2.1 (8/16/2012)
     - Fixed embarrasing multi-monitor bug
@@ -49,3 +43,8 @@ On Lion you should be able to open up the Xcode project and compile it.
     - More robust window sizing
     - General code clean up
     - Rewrite of window tiling code
+
+## 3rd Party Frameworks
+
+ * [ShortcutRecorder](http://code.google.com/p/shortcutrecorder/) framework (*New BSD license*) for capturing key bindings during hotkey reconfiguration.
+ * [FMT](https://github.com/fikovnik/FMT) framework (*MIT license*) for some utility functions like handling login items, hot keys, etc.
