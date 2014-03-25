@@ -111,6 +111,18 @@ NSDictionary *allShiftActions = nil;
 	[defaults synchronize];
 	
 }
+
+- (int)osxMinorVersion {
+    NSDictionary *systemVersionDictionary =  [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"];
+    NSString *systemVersion = [systemVersionDictionary objectForKey:@"ProductVersion"];
+    NSArray *components = [systemVersion componentsSeparatedByString:@"."];
+    if (components.count > 1) {
+        return [components[1] intValue];
+    } else {
+        return 0;
+    }
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults synchronize];
@@ -128,10 +140,18 @@ NSDictionary *allShiftActions = nil;
 	[defaults registerDefaults:d];
 	
 	if (!AXAPIEnabled()){
-        int ret = NSRunAlertPanel (@"UI Element Inspector requires that the Accessibility API be enabled.  Please \"Enable access for assistive devices and try again\".", @"", @"OK", @"Cancel",NULL);
+        NSString *subMessage = @"";
+        if (self.osxMinorVersion >= 9) {
+            subMessage = @"it's under the privacy tab in System Preferences>Privacy";
+        }
+        int ret = NSRunAlertPanel (@"ShiftIt requires that the Accessibility API be enabled.  Please enable Accessibility access.", subMessage, @"Take me there", @"Quit",NULL);
         switch (ret){
             case NSAlertDefaultReturn:
-                [[NSWorkspace sharedWorkspace] openFile:@"/System/Library/PreferencePanes/UniversalAccessPref.prefPane"];
+                if (self.osxMinorVersion < 9) {
+                    [[NSWorkspace sharedWorkspace] openFile:@"/System/Library/PreferencePanes/UniversalAccessPref.prefPane"];
+                } else {
+                    [[NSWorkspace sharedWorkspace] openFile:@"/System/Library/PreferencePanes/Security.prefPane"];
+                }
 				[NSApp terminate:self];
 				
 				return;

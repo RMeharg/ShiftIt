@@ -31,6 +31,10 @@ So, to throw a window to the top-left corner: ⌃⌥⌘ + ←, ⌃⌥⌘ + ↑, 
 
 ## Release Notes
 
+- v2.3 (3/25/2013)
+    - Route to correct preference pane to enable Accessibility on Mavericks
+    - Throwing a window between monitors maintains the aspect ratio of the window (previously the window was always recentered)
+
 - v2.2 (6/14/2013)
     - Fixed bug in multi-monitor support where two monitors are mirrored and one monitor is not.
     - Tool bar icon is now retina-friendly
